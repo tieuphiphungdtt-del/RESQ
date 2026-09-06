@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ResQ Command Center</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- =====================================================
+         TOP BAR
+    ====================================================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                R
+            </div>
+
+            <div>
+                <h1>ResQ</h1>
+                <span>SEARCH & RESCUE SYSTEM</span>
+            </div>
+
+        </div>
+
+
+        <div class="top-controls">
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                SYSTEM ONLINE
+            </div>
+
+            <button id="themeToggle" class="icon-button">
+                ☾
+            </button>
+
+            <div class="brightness-control">
+
+                <span>☼</span>
+
+                <input
+                    id="brightnessSlider"
+                    type="range"
+                    min="60"
+                    max="120"
+                    value="100"
+                >
+
+            </div>
+
+            <button id="audioButton" class="audio-button">
+                🔇 Audio
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN DASHBOARD
+    ====================================================== -->
+
+    <main class="dashboard">
+
+
+        <!-- =================================================
+             CAMERA + HAZARD MAP
+        ================================================== -->
+
+        <section class="visual-grid">
+
+
+            <!-- ================= CAMERA ================= -->
+
+            <div class="panel camera-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <span class="eyebrow">
+                            LIVE FEED
+                        </span>
+
+                        <h2>
+                            Camera
+                        </h2>
+                    </div>
+
+                    <div class="live-indicator">
+
+                        <span></span>
+                        LIVE
+
+                    </div>
+
+                </div>
+
+
+                <div class="camera-feed">
+
+                    <div class="camera-grid"></div>
+
+                    <div class="camera-placeholder">
+
+                        <div class="camera-icon">
+                            ◉
+                        </div>
+
+                        <h3>
+                            CAMERA OFFLINE
+                        </h3>
+
+                        <p>
+                            Waiting for Raspberry Pi camera...
+                        </p>
+
+                    </div>
+
+                    <div class="camera-overlay">
+
+                        <span>
+                            OV5647
+                        </span>
+
+                        <span id="cameraResolution">
+                            1920 × 1080
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= HAZARD MAP ================= -->
+
+            <div class="panel map-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            SPATIAL ANALYSIS
+                        </span>
+
+                        <h2>
+                            Dynamic Hazard Map
+                        </h2>
+
+                    </div>
+
+                    <div class="map-mode">
+                        LIVE MAP
+                    </div>
+
+                </div>
+
+
+                <div class="hazard-map">
+
+                    <div class="map-grid">
+
+                        <!-- row 1 -->
+
+                        <div class="cell safe"></div>
+                        <div class="cell safe"></div>
+                        <div class="cell safe"></div>
+                        <div class="cell caution"></div>
+                        <div class="cell danger"></div>
+
+                        <!-- row 2 -->
+
+                        <div class="cell safe"></div>
+                        <div class="cell safe"></div>
+                        <div class="cell caution"></div>
+                        <div class="cell danger"></div>
+                        <div class="cell danger"></div>
+
+                        <!-- row 3 -->
+
+                        <div class="cell safe"></div>
+                        <div class="cell caution"></div>
+                        <div class="cell caution"></div>
+                        <div class="cell danger"></div>
+                        <div class="cell danger"></div>
+
+                        <!-- row 4 -->
+
+                        <div class="cell safe"></div>
+                        <div class="cell safe"></div>
+                        <div class="cell caution"></div>
+                        <div class="cell caution"></div>
+                        <div class="cell safe"></div>
+
+                        <!-- row 5 -->
+
+                        <div class="cell safe"></div>
+                        <div class="cell safe"></div>
+                        <div class="cell safe"></div>
+                        <div class="cell safe"></div>
+                        <div class="cell safe"></div>
+
+                    </div>
+
+
+                    <!-- DEVICE POSITION -->
+
+                    <div class="device-marker">
+
+                        <div class="device-pulse"></div>
+
+                        <div class="device-core">
+                            R
+                        </div>
+
+                    </div>
+
+
+                    <!-- ROUTE -->
+
+                    <svg
+                        class="route-overlay"
+                        viewBox="0 0 500 500"
+                        preserveAspectRatio="none">
+
+                        <polyline
+                            points="250,440 250,350 300,300 300,200 350,150 400,100"
+                            fill="none"
+                            stroke="white"
+                            stroke-width="5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-dasharray="8 8"
+                        />
+
+                    </svg>
+
+
+                    <div class="route-label">
+                        ROUTE A · LOWEST RISK
+                    </div>
+
+                </div>
+
+
+                <!-- MAP LEGEND -->
+
+                <div class="map-legend">
+
+                    <div>
+                        <span class="legend-dot safe-dot"></span>
+                        SAFE
+                    </div>
+
+                    <div>
+                        <span class="legend-dot caution-dot"></span>
+                        CAUTION
+                    </div>
+
+                    <div>
+                        <span class="legend-dot danger-dot"></span>
+                        DANGER
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             DECISION + ROUTE
+        ================================================== -->
+
+        <section class="decision-grid">
+
+
+            <!-- ================= CURRENT ASSESSMENT ================= -->
+
+            <section class="decision-panel">
+
+                <div class="decision-main">
+
+                    <span class="eyebrow">
+                        CURRENT ASSESSMENT
+                    </span>
+
+                    <div class="decision-status">
+
+                        <div
+                            id="hazardIndicator"
+                            class="hazard-indicator danger"
+                        >
+
+                            <div class="indicator-symbol">
+                                !
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2 id="hazardStatus">
+                                DANGER
+                            </h2>
+
+                            <p id="recommendation">
+                                STOP — HIGH RISK CONDITIONS DETECTED
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hazard-score">
+
+                    <span class="eyebrow">
+                        HAZARD SCORE
+                    </span>
+
+                    <strong id="hazardScore">
+                        72
+                    </strong>
+
+                    <span>
+                        /100
+                    </span>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= RECOMMENDED ROUTE ================= -->
+
+            <section class="route-panel panel">
+
+                <div class="route-info">
+
+                    <span class="eyebrow">
+                        ROUTE PLANNING
+                    </span>
+
+                    <h2>
+                        Recommended Route
+                    </h2>
+
+                    <p>
+                        Route A provides the lowest estimated
+                        hazard exposure.
+                    </p>
+
+                </div>
+
+
+                <div class="route-result">
+
+                    <div class="route-badge">
+                        A
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            LOWEST RISK PATH
+                        </strong>
+
+                        <span>
+                            Estimated risk: 31 / 100
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- =================================================
+             TELEMETRY
+        ================================================== -->
+
+        <section class="telemetry-section">
+
+            <div class="section-title">
+
+                <div>
+
+                    <span class="eyebrow">
+                        SYSTEM TELEMETRY
+                    </span>
+
+                    <h2>
+                        Sensor Data
+                    </h2>
+
+                </div>
+
+                <span class="simulation-label">
+                    SIMULATION MODE
+                </span>
+
+            </div>
+
+
+            <div class="telemetry-grid">
+
+
+                <!-- DISTANCE -->
+
+                <div class="telemetry-card">
+
+                    <span class="telemetry-label">
+                        DISTANCE
+                    </span>
+
+                    <div class="telemetry-value">
+
+                        <strong id="distanceValue">
+                            1.25
+                        </strong>
+
+                        <span>
+                            m
+                        </span>
+
+                    </div>
+
+                    <div class="telemetry-description">
+                        Obstacle proximity
+                    </div>
+
+                </div>
+
+
+                <!-- ROLL -->
+
+                <div class="telemetry-card">
+
+                    <span class="telemetry-label">
+                        ROLL
+                    </span>
+
+                    <div class="telemetry-value">
+
+                        <strong id="rollValue">
+                            -32.8
+                        </strong>
+
+                        <span>
+                            °
+                        </span>
+
+                    </div>
+
+                    <div class="telemetry-description">
+                        Lateral tilt
+                    </div>
+
+                </div>
+
+
+                <!-- PITCH -->
+
+                <div class="telemetry-card">
+
+                    <span class="telemetry-label">
+                        PITCH
+                    </span>
+
+                    <div class="telemetry-value">
+
+                        <strong id="pitchValue">
+                            32.5
+                        </strong>
+
+                        <span>
+                            °
+                        </span>
+
+                    </div>
+
+                    <div class="telemetry-description">
+                        Forward tilt
+                    </div>
+
+                </div>
+
+
+                <!-- MOVEMENT -->
+
+                <div class="telemetry-card">
+
+                    <span class="telemetry-label">
+                        MOVEMENT
+                    </span>
+
+                    <div class="telemetry-value">
+
+                        <strong id="movementValue">
+                            HIGH
+                        </strong>
+
+                    </div>
+
+                    <div class="telemetry-description">
+                        Motion intensity
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        /* =================================================
+           THEME
+        ================================================= */
+
+        const themeToggle =
+            document.getElementById("themeToggle");
+
+        themeToggle.addEventListener(
+            "click",
+            () => {
+
+                document.body.classList.toggle(
+                    "light-mode"
+                );
+
+                if (
+                    document.body.classList.contains(
+                        "light-mode"
+                    )
+                ) {
+
+                    themeToggle.textContent = "☀";
+
+                } else {
+
+                    themeToggle.textContent = "☾";
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           BRIGHTNESS
+        ================================================= */
+
+        const brightnessSlider =
+            document.getElementById(
+                "brightnessSlider"
+            );
+
+        brightnessSlider.addEventListener(
+            "input",
+            () => {
+
+                document.body.style.filter =
+                    `brightness(${brightnessSlider.value}%)`;
+
+            }
+        );
+
+
+        /* =================================================
+           AUDIO
+        ================================================= */
+
+        const audioButton =
+            document.getElementById(
+                "audioButton"
+            );
+
+        let audioEnabled = false;
+
+        audioButton.addEventListener(
+            "click",
+            () => {
+
+                audioEnabled =
+                    !audioEnabled;
+
+                if (audioEnabled) {
+
+                    audioButton.textContent =
+                        "🔊 Audio ON";
+
+                    audioButton.classList.add(
+                        "active"
+                    );
+
+                } else {
+
+                    audioButton.textContent =
+                        "🔇 Audio";
+
+                    audioButton.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           SENSOR API
+        ================================================= */
+
+        async function updateSensorData() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/sensor-data"
+                    );
+
+                const data =
+                    await response.json();
+
+
+                /* DISTANCE */
+
+                if (data.distance !== undefined) {
+
+                    document.getElementById(
+                        "distanceValue"
+                    ).textContent =
+                        data.distance.toFixed(2);
+
+                }
+
+
+                /* ROLL */
+
+                if (data.roll !== undefined) {
+
+                    document.getElementById(
+                        "rollValue"
+                    ).textContent =
+                        data.roll.toFixed(1);
+
+                }
+
+
+                /* PITCH */
+
+                if (data.pitch !== undefined) {
+
+                    document.getElementById(
+                        "pitchValue"
+                    ).textContent =
+                        data.pitch.toFixed(1);
+
+                }
+
+
+                /* MOVEMENT */
+
+                if (data.movement !== undefined) {
+
+                    document.getElementById(
+                        "movementValue"
+                    ).textContent =
+                        data.movement;
+
+                }
+
+
+                /* HAZARD */
+
+                if (data.hazard !== undefined) {
+
+                    const status =
+                        data.hazard.toUpperCase();
+
+
+                    const indicator =
+                        document.getElementById(
+                            "hazardIndicator"
+                        );
+
+                    const statusText =
+                        document.getElementById(
+                            "hazardStatus"
+                        );
+
+
+                    indicator.classList.remove(
+                        "safe",
+                        "caution",
+                        "danger"
+                    );
+
+
+                    indicator.classList.add(
+                        status.toLowerCase()
+                    );
+
+
+                    statusText.textContent =
+                        status;
+
+                }
+
+
+                /* RECOMMENDATION */
+
+                if (
+                    data.recommendation !==
+                    undefined
+                ) {
+
+                    document.getElementById(
+                        "recommendation"
+                    ).textContent =
+                        data.recommendation;
+
+                }
+
+
+                /* SCORE */
+
+                if (
+                    data.hazard_score !==
+                    undefined
+                ) {
+
+                    document.getElementById(
+                        "hazardScore"
+                    ).textContent =
+                        Math.round(
+                            data.hazard_score
+                        );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "ResQ API error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* UPDATE EVERY SECOND */
+
+        updateSensorData();
+
+        setInterval(
+            updateSensorData,
+            1000
+        );
+
+    </script>
+
+</body>
+
+</html>

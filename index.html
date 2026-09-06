@@ -7,8 +7,7 @@
 
     <title>ResQ Command Center</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
@@ -37,7 +36,7 @@
 
             <div class="system-status">
                 <span class="status-dot"></span>
-                SYSTEM ONLINE
+                DEMO MODE
             </div>
 
             <button id="themeToggle" class="icon-button">
@@ -100,7 +99,7 @@
                     <div class="live-indicator">
 
                         <span></span>
-                        LIVE
+                        DEMO
 
                     </div>
 
@@ -163,7 +162,7 @@
                     </div>
 
                     <div class="map-mode">
-                        LIVE MAP
+                        DEMO MAP
                     </div>
 
                 </div>
@@ -595,203 +594,92 @@
         );
 
 
-        /* =================================================
-           AUDIO
-        ================================================= */
+ /* =================================================
+   DEMO DATA
+================================================= */
 
-        const audioButton =
-            document.getElementById(
-                "audioButton"
-            );
+const demoData = {
+    distance: 1.25,
+    roll: -32.8,
+    pitch: 32.5,
+    movement: "HIGH",
+    hazard: "DANGER",
+    recommendation: "STOP — HIGH RISK CONDITIONS DETECTED",
+    hazard_score: 72
+};
 
-        let audioEnabled = false;
+function updateDashboard(data) {
 
-        audioButton.addEventListener(
-            "click",
-            () => {
+    document.getElementById("distanceValue").textContent =
+        data.distance.toFixed(2);
 
-                audioEnabled =
-                    !audioEnabled;
+    document.getElementById("rollValue").textContent =
+        data.roll.toFixed(1);
 
-                if (audioEnabled) {
+    document.getElementById("pitchValue").textContent =
+        data.pitch.toFixed(1);
 
-                    audioButton.textContent =
-                        "🔊 Audio ON";
+    document.getElementById("movementValue").textContent =
+        data.movement;
 
-                    audioButton.classList.add(
-                        "active"
-                    );
+    const status = data.hazard.toUpperCase();
 
-                } else {
+    const indicator =
+        document.getElementById("hazardIndicator");
 
-                    audioButton.textContent =
-                        "🔇 Audio";
+    const statusText =
+        document.getElementById("hazardStatus");
 
-                    audioButton.classList.remove(
-                        "active"
-                    );
+    indicator.classList.remove(
+        "safe",
+        "caution",
+        "danger"
+    );
 
-                }
+    indicator.classList.add(
+        status.toLowerCase()
+    );
 
-            }
-        );
+    statusText.textContent = status;
 
+    document.getElementById("recommendation").textContent =
+        data.recommendation;
 
-        /* =================================================
-           SENSOR API
-        ================================================= */
+    document.getElementById("hazardScore").textContent =
+        Math.round(data.hazard_score);
+}
 
-        async function updateSensorData() {
 
-            try {
+/* INITIAL DEMO DATA */
 
-                const response =
-                    await fetch(
-                        "/api/sensor-data"
-                    );
+updateDashboard(demoData);
 
-                const data =
-                    await response.json();
 
+/* SMALL DEMO ANIMATION */
 
-                /* DISTANCE */
+setInterval(() => {
 
-                if (data.distance !== undefined) {
+    const variation =
+        (Math.random() - 0.5) * 0.08;
 
-                    document.getElementById(
-                        "distanceValue"
-                    ).textContent =
-                        data.distance.toFixed(2);
+    const demo = {
+        ...demoData,
+        distance: Math.max(
+            0.5,
+            demoData.distance + variation
+        ),
+        roll:
+            demoData.roll +
+            (Math.random() - 0.5) * 2,
 
-                }
+        pitch:
+            demoData.pitch +
+            (Math.random() - 0.5) * 2
+    };
 
+    updateDashboard(demo);
 
-                /* ROLL */
-
-                if (data.roll !== undefined) {
-
-                    document.getElementById(
-                        "rollValue"
-                    ).textContent =
-                        data.roll.toFixed(1);
-
-                }
-
-
-                /* PITCH */
-
-                if (data.pitch !== undefined) {
-
-                    document.getElementById(
-                        "pitchValue"
-                    ).textContent =
-                        data.pitch.toFixed(1);
-
-                }
-
-
-                /* MOVEMENT */
-
-                if (data.movement !== undefined) {
-
-                    document.getElementById(
-                        "movementValue"
-                    ).textContent =
-                        data.movement;
-
-                }
-
-
-                /* HAZARD */
-
-                if (data.hazard !== undefined) {
-
-                    const status =
-                        data.hazard.toUpperCase();
-
-
-                    const indicator =
-                        document.getElementById(
-                            "hazardIndicator"
-                        );
-
-                    const statusText =
-                        document.getElementById(
-                            "hazardStatus"
-                        );
-
-
-                    indicator.classList.remove(
-                        "safe",
-                        "caution",
-                        "danger"
-                    );
-
-
-                    indicator.classList.add(
-                        status.toLowerCase()
-                    );
-
-
-                    statusText.textContent =
-                        status;
-
-                }
-
-
-                /* RECOMMENDATION */
-
-                if (
-                    data.recommendation !==
-                    undefined
-                ) {
-
-                    document.getElementById(
-                        "recommendation"
-                    ).textContent =
-                        data.recommendation;
-
-                }
-
-
-                /* SCORE */
-
-                if (
-                    data.hazard_score !==
-                    undefined
-                ) {
-
-                    document.getElementById(
-                        "hazardScore"
-                    ).textContent =
-                        Math.round(
-                            data.hazard_score
-                        );
-
-                }
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "ResQ API error:",
-                    error
-                );
-
-            }
-
-        }
-
-
-        /* UPDATE EVERY SECOND */
-
-        updateSensorData();
-
-        setInterval(
-            updateSensorData,
-            1000
-        );
+}, 2000);
 
     </script>
 
